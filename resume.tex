@@ -1,0 +1,15 @@
+\chapter*{Résumé}
+\addcontentsline{toc}{chapter}{Résumé}
+
+Dans le cadre de ma formation d'ingénieur en informatique à l'EMSI, j'ai effectué un stage de six semaines au sein de Barid Al Maghrib (Poste Maroc) du 1er juillet au 8 août 2025. Ce stage avait pour objectif principal l'optimisation et le développement d'un système de gestion des colis postaux, avec un focus particulier sur l'amélioration des performances et de l'expérience utilisateur.
+
+Le système existant de gestion des colis présentait plusieurs limitations critiques : des performances dégradées lors de requêtes sur de gros volumes de données, une visualisation cartographique basique utilisant uniquement des frontières GeoJSON, et des temps de réponse non optimaux impactant l'expérience utilisateur. Face à ces défis, l'objectif était de moderniser l'architecture technique tout en maintenant la stabilité opérationnelle.
+
+Mes principales contributions techniques se sont articulées autour de trois axes majeurs. Premièrement, j'ai conçu et implémenté une architecture hybride MySQL/MongoDB permettant d'exploiter les avantages des deux technologies. MongoDB a été utilisé pour optimiser les requêtes de consultation et de recherche, tandis que MySQL conserve les opérations transactionnelles critiques. Cette approche a permis une amélioration significative des temps de réponse. Deuxièmement, j'ai remplacé l'affichage cartographique basique par une solution avancée intégrant des tiles cartographiques haute résolution et un système de clustering intelligent. Cette innovation a considérablement amélioré la lisibilité et l'interactivité des cartes, offrant une meilleure expérience utilisateur pour le suivi géographique des colis. Troisièmement, j'ai implémenté une solution d'authentification et d'autorisation robuste basée sur Keycloak, avec gestion des rôles (ADMIN, CLIENT), protection JWT des API, et intégration transparente côté frontend React.
+
+Le développement s'est appuyé sur une stack technique moderne : Spring Boot [1] pour le backend avec Spring Security [2] et Spring Data [3,4], React [5] pour le frontend, MongoDB [6] avec indexation optimisée, et Keycloak [8] pour la sécurité. L'ensemble du projet a été développé suivant les bonnes pratiques DevOps avec gestion de versions Git et architecture microservices.
+
+Les solutions implémentées ont permis d'obtenir des gains de performance mesurables, une amélioration notable de l'expérience utilisateur, et une architecture sécurisée respectant les standards industriels. Ce projet a également renforcé ma vision d'ingénieur en me confrontant aux défis réels de l'optimisation de systèmes en production. Ce stage m'a permis de développer une expertise approfondie en architecture de données, optimisation de performances, et intégration de solutions de sécurité enterprise, tout en enrichissant ma compréhension des enjeux métier du secteur logistique et postal.
+
+\vspace{1cm}
+\noindent\textbf{Mots-clés :} Optimisation de performances, MongoDB, Visualisation cartographique, Keycloak, Spring Boot, React, Architecture hybride, Sécurité JWT, Système de gestion des colis, Barid Al Maghrib.

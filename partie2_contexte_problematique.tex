@@ -1,0 +1,155 @@
+\chapter{Contexte et Problématique du Stage}
+
+\section{État des Lieux du Système Existant}
+
+\subsection{Architecture actuelle}
+
+Le système de gestion des colis de Barid Al Maghrib au moment de mon arrivée s'appuyait sur une architecture traditionnelle à trois couches : présentation, logique métier, et persistance des données. L'architecture backend était basée sur le framework Spring Boot, offrant une structure modulaire et une gestion efficace des dépendances. Cette couche métier exposait des services REST permettant la communication avec le frontend développé en React.
+
+La couche de persistance reposait exclusivement sur une base de données relationnelle MySQL, structurée selon un modèle entité-relation classique. Cette approche traditionnelle présentait l'avantage de la cohérence transactionnelle et de la maturité technologique, mais révélait certaines limitations face aux volumes croissants de données et aux exigences de performance moderne.
+
+L'architecture frontend utilisait React avec une approche de Single Page Application (SPA), intégrant des bibliothèques de visualisation pour l'affichage cartographique et les tableaux de données. Cette architecture, bien que fonctionnelle, ne tirait pas pleinement parti des possibilités d'optimisation offertes par les technologies émergentes, notamment en matière de gestion des gros volumes de données et de visualisation interactive.
+
+\subsection{Technologies utilisées}
+
+Le système existant s'appuyait sur une stack technologique mature mais nécessitant une modernisation pour répondre aux enjeux de performance et de scalabilité.
+
+\begin{table}[H]
+\centering
+\caption{Stack technologique du système existant}
+\label{tab:stack_existant}
+\begin{tabular}{|l|l|l|p{4cm}|}
+\hline
+\textbf{Couche} & \textbf{Technologie} & \textbf{Version} & \textbf{Limitations identifiées} \\
+\hline
+\multirow{4}{*}{Frontend} & React & 18.0 & Interfaces non optimisées \\
+& React Router & 6.3 & Navigation basique \\
+& Axios & 0.27 & Communications HTTP simples \\
+& Leaflet & 1.8 & Cartographie GeoJSON limitée \\
+\hline
+\multirow{4}{*}{Backend} & Spring Boot & 2.7 & Configuration standard \\
+& Spring Data JPA & 2.7 & Accès données non optimisé \\
+& Spring Security & 5.7 & Sécurité basique \\
+& Spring Web & 2.7 & API REST simples \\
+\hline
+Base de données & MySQL & 8.0 & Approche relationnelle pure \\
+\hline
+\end{tabular}
+\end{table}
+
+Cette configuration offrait une base fonctionnelle mais manquait d'optimisations spécifiques aux cas d'usage de l'application.
+\subsection{Limitations identifiées}
+
+L'analyse du système existant a révélé plusieurs limitations critiques réparties selon différents domaines fonctionnels.
+
+\begin{table}[H]
+\centering
+\caption{Analyse des limitations du système existant}
+\label{tab:limitations}
+\begin{tabular}{|l|p{4cm}|l|p{3cm}|}
+\hline
+\textbf{Domaine} & \textbf{Limitation} & \textbf{Impact} & \textbf{Priorité} \\
+\hline
+\multirow{3}{*}{Performance} & Temps de réponse 3-5s & UX dégradée & Élevée \\
+& Requêtes SQL complexes & Charge MySQL & Élevée \\
+& Absence de cache & Recalcul systématique & Moyenne \\
+\hline
+\multirow{2}{*}{Recherche} & Pas de recherche floue & Difficulté localisation & Élevée \\
+& Filtres limités & Efficacité réduite & Moyenne \\
+\hline
+\multirow{2}{*}{Cartographie} & GeoJSON basique & Visualisation pauvre & Moyenne \\
+& & Performance dégradée & Faible \\
+\hline
+\multirow{2}{*}{Sécurité} & Auth. basique & Sécurité insuffisante & Élevée \\
+& Rôles limités & Contrôle d'accès faible & Élevée \\
+\hline
+\end{tabular}
+\end{table}
+
+Ces limitations impactaient directement l'efficacité opérationnelle et nécessitaient une approche d'optimisation globale.
+
+\section{Problématiques Identifiées}
+
+\subsection{Performance des requêtes}
+
+La problématique de performance constituait l'enjeu technique le plus critique du système existant. Les requêtes de consultation des listes de colis, particulièrement fréquentes dans le workflow quotidien, présentaient des temps de réponse moyens de 3 à 5 secondes pour des jeux de données dépassant 10 000 enregistrements. Cette latence s'expliquait par la complexité des requêtes SQL nécessaires pour récupérer et agréger les informations distribuées dans plusieurs tables relationnelles.
+
+Les opérations de recherche textuelle sur les champs descriptifs (codes colis, noms destinataires, adresses) s'avéraient particulièrement pénalisantes. L'absence d'indexation full-text optimisée obligeait le système à effectuer des parcours séquentiels sur les enregistrements, générant des requêtes de type LIKE non optimisées. Cette approche devenait rapidement problématique avec l'augmentation du volume des données traitées quotidiennement par Barid Al Maghrib.
+
+Les statistiques et rapports de synthèse nécessitaient des calculs d'agrégation complexes impliquant des GROUP BY et des fonctions de calcul sur l'ensemble des données historiques. Ces opérations, exécutées directement sur la base transactionnelle, impactaient les performances globales du système et créaient des contentions d'accès aux ressources lors des pics d'utilisation.
+
+\subsection{Gestion des données géographiques}
+
+L'affichage cartographique présentait des limitations majeures tant en termes de qualité visuelle que de performances d'affichage. Le système existant se contentait d'afficher les contours géographiques des régions marocaines sous forme de polygones GeoJSON simples, sans enrichissement par des fonds de carte détaillés ni intégration de services cartographiques modernes.
+
+Cette approche basique générait plusieurs problèmes opérationnels significatifs. Premièrement, l'absence de fonds de carte contextuels (routes, villes, points de repère) rendait difficile l'interprétation géographique pour les utilisateurs non familiers avec les contours administratifs purs. Deuxièmement, l'affichage simultané de nombreux marqueurs de colis créait des problèmes de lisibilité et de performance, particulièrement dans les zones urbaines denses.
+
+L'absence de système de clustering intelligent pour regrouper les points géographiquement proches obligeait le navigateur à rendre individuellement chaque marqueur, générant des ralentissements significatifs lors de l'affichage de datasets importants. Cette limitation impactait directement la capacité des gestionnaires à analyser efficacement les patterns de distribution géographique et à optimiser les tournées de livraison.
+
+\subsection{Expérience utilisateur}
+
+L'expérience utilisateur souffrait de plusieurs défauts majeurs impactant la productivité quotidienne des équipes opérationnelles. Les temps de chargement prolongés des listes de colis créaient des interruptions fréquentes dans les workflows, obligeant les utilisateurs à attendre plusieurs secondes entre chaque action. Cette latence s'avérait particulièrement problématique lors des opérations de tri et de filtrage, actions répétées de nombreuses fois par jour.
+
+L'interface de recherche manquait de réactivité et de fonctionnalités avancées. L'absence de suggestions automatiques, de recherche floue, et de filtres combinés obligeait les utilisateurs à connaître précisément les critères de recherche, réduisant l'efficacité opérationnelle. Cette limitation était particulièrement pénalisante pour les nouveaux utilisateurs ou lors de la recherche de colis avec des informations partielles.
+
+La visualisation des données statistiques présentait également des lacunes en termes d'interactivité et de richesse informationnelle. Les graphiques statiques ne permettaient pas l'exploration interactive des données, limitant la capacité d'analyse des gestionnaires. L'absence de drill-down et de filtrage dynamique réduisait l'utilité des tableaux de bord pour la prise de décision opérationnelle.
+
+\subsection{Scalabilité du système}
+
+La croissance continue du volume d'activité de Barid Al Maghrib posait des défis de scalabilité que l'architecture existante ne pouvait résoudre efficacement. L'approche monolithique de la base de données, concentrant toutes les opérations sur une seule instance MySQL, créait des goulots d'étranglement lors des pics d'activité. Cette limitation devenait particulièrement critique pendant les périodes de forte activité commerciale.
+
+L'absence de stratégie de cache appropriée obligeait le système à recalculer systématiquement les requêtes fréquentes, multipliant la charge sur la base de données. Cette approche n'était pas viable à long terme compte tenu de la croissance prévue des volumes de colis traités par l'entreprise.
+
+La gestion des accès concurrents présentait également des défis croissants. L'augmentation du nombre d'utilisateurs simultanés générait des contentions d'accès aux ressources partagées, particulièrement sensibles lors des opérations de mise à jour des statuts de colis en temps réel. Cette problématique nécessitait une réflexion architecturale approfondie pour assurer la montée en charge du système.
+
+\section{Objectifs du Stage}
+
+\subsection{Objectifs techniques}
+
+Mon premier objectif technique consistait à concevoir et implémenter une solution d'optimisation des performances basée sur l'intégration de MongoDB comme couche de cache intelligent. Cette approche hybride devait permettre de conserver les avantages transactionnels de MySQL pour les opérations critiques tout en exploitant les capacités de MongoDB pour les requêtes de consultation et de recherche. L'objectif quantitatif visait une réduction d'au moins 60\% des temps de réponse pour les opérations de listing et de recherche.
+
+Le deuxième objectif technique portait sur l'amélioration substantielle de la visualisation cartographique. Il s'agissait de remplacer l'affichage GeoJSON basique par une solution intégrant des tiles cartographiques haute résolution et un système de clustering intelligent. Cette évolution devait améliorer significativement la lisibilité des cartes et les performances d'affichage, même avec des milliers de points simultanés.
+
+Le troisième objectif technique concernait l'implémentation d'une solution de sécurisation moderne basée sur Keycloak. Cette évolution devait remplacer l'authentification basique par un système complet de gestion d'identité et d'accès, incluant l'authentification multi-facteur, la gestion fine des rôles, et l'intégration avec les standards OAuth 2.0 et OpenID Connect.
+
+\subsection{Objectifs fonctionnels}
+
+Sur le plan fonctionnel, l'objectif principal visait l'amélioration significative de l'expérience utilisateur quotidienne des équipes opérationnelles de Barid Al Maghrib. Cette amélioration devait se traduire par une réduction drastique des temps d'attente lors des opérations courantes et une augmentation de la fluidité générale de l'interface.
+
+L'enrichissement des fonctionnalités de recherche constituait un objectif fonctionnel majeur. Il s'agissait d'implémenter une recherche intelligente avec suggestions automatiques, recherche floue, et capacités de filtrage avancé. Cette évolution devait permettre aux utilisateurs de localiser rapidement les informations recherchées, même avec des critères partiels ou approximatifs.
+
+L'amélioration de la visualisation des données géographiques représentait également un enjeu fonctionnel important. L'objectif était de fournir aux gestionnaires des outils d'analyse spatiale plus riches, facilitant l'optimisation des tournées de livraison et l'identification des patterns géographiques dans la distribution des colis.
+
+\subsection{Objectifs d'apprentissage}
+
+Ce stage représentait pour moi une opportunité unique d'approfondir mes compétences en architecture de systèmes distribués et en optimisation de performances. L'objectif était de développer une expertise pratique dans la conception d'architectures hybrides combinant bases de données relationnelles et NoSQL, compétence cruciale dans le contexte technologique contemporain.
+
+L'apprentissage des technologies d'authentification et d'autorisation enterprise constituait un autre objectif pédagogique majeur. La maîtrise de Keycloak et des standards OAuth 2.0/OpenID Connect représentait un enrichissement significatif de mon profil technique, ces technologies étant devenues incontournables dans les architectures modernes.
+
+Le développement de ma vision d'ingénieur constituait l'objectif d'apprentissage le plus global. Il s'agissait de confronter mes connaissances théoriques aux réalités opérationnelles d'un grand groupe, d'apprendre à identifier et prioriser les problématiques techniques, et de développer des solutions pragmatiques répondant aux contraintes métier réelles.
+
+\section{Méthodologie de Travail}
+
+\subsection{Méthode Agile adoptée}
+
+L'approche méthodologique retenue pour ce projet s'inspire des principes Agiles, adaptés au contexte spécifique d'un stage de développement de six semaines. J'ai structuré le travail en sprints hebdomadaires, permettant une livraison incrémentale des fonctionnalités et une adaptation continue aux retours des utilisateurs et des encadrants.
+
+Chaque sprint débutait par une phase de planification détaillée, incluant la définition des objectifs, l'estimation des tâches, et l'identification des risques potentiels. Cette planification s'appuyait sur les retours du sprint précédent et sur l'évolution des priorités métier, garantissant l'alignement constant du développement avec les besoins opérationnels.
+
+La méthodologie intégrait également des points de synchronisation quotidiens avec mon encadrant industriel, permettant un suivi fin de l'avancement et une résolution rapide des blocages techniques. Cette approche collaborative a favorisé l'apprentissage continu et l'adaptation des solutions aux spécificités du contexte Barid Al Maghrib.
+
+\subsection{Outils de gestion de projet}
+
+La gestion de projet s'appuyait sur des outils modernes facilitant le suivi de l'avancement et la collaboration avec les équipes. Git servait de système de contrôle de version, avec une stratégie de branches permettant le développement parallèle des différentes fonctionnalités et l'intégration progressive des évolutions.
+
+GitHub Projects était utilisé pour le suivi des tâches et la gestion du backlog, offrant une visibilité complète sur l'avancement du projet et facilitant la priorisation des développements. Cet outil permettait également de lier directement les tâches aux commits et pull requests, assurant une traçabilité complète du développement.
+
+La documentation technique était maintenue en temps réel à l'aide de Markdown et intégrée au repository Git, garantissant sa cohérence avec l'évolution du code. Cette approche facilitait le transfert de connaissances et la maintenance future du système par les équipes internes.
+
+\subsection{Planning prévisionnel}
+
+Le planning prévisionnel a été structuré en six phases distinctes, chacune correspondant approximativement à une semaine de développement. La première semaine était consacrée à l'analyse approfondie de l'existant, à la compréhension des enjeux métier, et à la définition précise des spécifications techniques.
+
+Les semaines 2 et 3 étaient dédiées au développement du système d'optimisation des performances avec MongoDB, incluant la conception de la couche d'abstraction, l'implémentation des services de synchronisation, et les tests de montée en charge. Cette phase représentait le cœur technique du projet et nécessitait une attention particulière à la robustesse et aux performances.
+
+La semaine 4 était consacrée à l'amélioration de la visualisation cartographique, incluant l'intégration des tiles haute résolution et le développement du système de clustering. Les semaines 5 et 6 étaient réservées à l'implémentation de la sécurisation avec Keycloak, aux tests d'intégration finaux, et à la documentation du projet. Cette planification équilibrée permettait de traiter progressivement chaque aspect du projet tout en conservant du temps pour les ajustements et optimisations finales.
